@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <list> // For the chaining linked list
 
 using namespace std;
+
 const int TABLE_SIZE = 10;
 
 class ProbingStrategy {
@@ -44,7 +46,7 @@ private:
 
 public:
     HashTable(ProbingStrategy* strategy)
-            : table(TABLE_SIZE, -1), isOccupied(TABLE_SIZE, false), probingStrategy(strategy) {}
+        : table(TABLE_SIZE, -1), isOccupied(TABLE_SIZE, false), probingStrategy(strategy) {}
 
     void insert(int key) {
         int index = key % TABLE_SIZE;
@@ -71,7 +73,33 @@ public:
     }
 };
 
+class ChainingHashTable {
+private:
+    vector<list<int>> table;
 
+public:
+    ChainingHashTable() : table(TABLE_SIZE) {}
+
+    void insert(int key) {
+        int index = key % TABLE_SIZE;
+        table[index].push_back(key);
+    }
+
+    void display() const {
+        for (int i = 0; i < TABLE_SIZE; i++) {
+            cout << i << ": ";
+            if (table[i].empty()) {
+                cout << "NULL";
+            } else {
+                for (const auto& key : table[i]) {
+                    cout << key << " -> ";
+                }
+                cout << "NULL";
+            }
+            cout << "\n";
+        }
+    }
+};
 
 // Functions as defined in your code
 int divisionMethod(int key, int tableSize) {
@@ -153,10 +181,20 @@ int main() {
     doubleHashTable.insert(30);
     doubleHashTable.display();
 
-    cout << "Division Method: " << divisionMethod(7, 10) << endl;
+    cout << "\nChaining Method:\n";
+    ChainingHashTable chainingHashTable;
+    chainingHashTable.insert(10);
+    chainingHashTable.insert(20);
+    chainingHashTable.insert(30);
+    chainingHashTable.insert(40);
+    chainingHashTable.insert(50);
+    chainingHashTable.display();
+
+    cout << "\nDivision Method: " << divisionMethod(7, 10) << endl;
     cout << "Multiplication Method: " << multiplicationMethod(100, 150, 0.618033) << endl;
     cout << "Mid-Square Method: " << midSquareMethod(110, 200) << endl;
     cout << "Fold Shifting Method: " << foldShiftingMethod(100, 12345678) << endl;
     cout << "Fold Boundary Method: " << foldBoundaryMethod(100, 12345678) << endl;
 
+    return 0;
 }
